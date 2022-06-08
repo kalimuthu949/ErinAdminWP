@@ -1,0 +1,25 @@
+#workbenchPageContent {
+  max-width: 100%;
+}
+.content_3f3fd3c2,
+.CanvasZone {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+.ms-Pivot-count {
+  color: #004fa2;
+  font-weight: bold;
+  position: relative;
+  top: -0.5rem;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+}
+.yourMultiplier .ms-TextField-wrapper {
+  display: flex !important;
+}
+.yourMultiplier label {
+  width: 100% !important;
+}
