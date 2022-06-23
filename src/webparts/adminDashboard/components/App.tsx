@@ -127,6 +127,7 @@ const modelProps = {
 const App = (props) => {
   loadTheme(blueTheme);
   let siteURL = props.context.pageContext.web.absoluteUrl;
+  let loggeduseremail=props.context.pageContext.user.email
   const [items, setItems] = useState([]);
   const [fetchList, setFetchList] = useState(false);
   const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
@@ -146,10 +147,10 @@ const App = (props) => {
             title: choice,
           });
         });
-        let currentUserInfo = "";
+        /*let currentUserInfo = "";
         await props.graphcontext.me.get().then((curUser) => {
           currentUserInfo = curUser;
-        });
+        });*/
         await props.spcontext.web.siteGroups
           .getByName("FinanceGroup")
           .users()
@@ -160,10 +161,13 @@ const App = (props) => {
             isUserInFinance =
               financeGroup.filter(
                 (users) =>
-                  users.toLowerCase() ==
-                  currentUserInfo["userPrincipalName"].toLowerCase()
+                users.toLowerCase()==users.toLowerCase()==loggeduseremail.toLowerCase()
+                  //(users.toLowerCase() ==currentUserInfo["userPrincipalName"].toLowerCase())
               ).length > 0;
-          });
+          }).catch(function(error)
+          {
+            console.log(error);
+          })
         await props.spcontext.web.lists
           .getByTitle("WFQuoteRequestList")
           .items.select("*,UserDetails/Title,UserDetails/EMail")
