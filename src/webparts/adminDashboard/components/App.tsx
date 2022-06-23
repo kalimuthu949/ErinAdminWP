@@ -41,6 +41,7 @@ import {
   PersonaPresence,
 } from "@fluentui/react/lib/Persona";
 
+let empty = "test";
 let allItems = [];
 let constructedItems = [];
 let statusOptions: IDropdownOption[] = [];

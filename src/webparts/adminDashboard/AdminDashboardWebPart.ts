@@ -16,6 +16,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import { IAdminDashboardProps } from "./components/IAdminDashboardProps";
 
 export interface IAdminDashboardWebPartProps {
+  
   description: string;
 }
 
