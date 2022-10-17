@@ -175,12 +175,13 @@ const App = (props) => {
           .expand("UserDetails")
           .orderBy("Modified", false)
           .get()
-          .then((wfItems: any) => {
+          .then(async (wfItems: any) => {
             allItems = [];
             wfItems.forEach((wfItem) => {
               allItems.push({
                 ID: wfItem.ID,
                 ClientName: "Wells Fargo",
+                siteorclient:wfItem.BEName,
                 OrderNo: wfItem.OrderNo,
                 AssignedTo: wfItem.UserDetails ? wfItem.UserDetails : "",
                 StartDate: wfItem.StartDate
@@ -196,8 +197,7 @@ const App = (props) => {
                 Modified: new Date(wfItem.Modified).toLocaleDateString(),
               });
             });
-          })
-          .then(async () => {
+
             await props.spcontext.web.lists
               .getByTitle("GeneralQuoteRequestList")
               .items.select("*,UserDetails/Title,UserDetails/EMail")
@@ -209,6 +209,7 @@ const App = (props) => {
                   allItems.push({
                     ID: nwfItem.ID,
                     ClientName: nwfItem.CompanyName,
+                    siteorclient:nwfItem.CompanyName,
                     OrderNo: nwfItem.OrderNo,
                     AssignedTo: nwfItem.UserDetails ? nwfItem.UserDetails : "",
                     StartDate: nwfItem.StartDate,
@@ -221,19 +222,41 @@ const App = (props) => {
                   });
                 });
               });
-            allItems = allItems.sort((a, b) => {
-              var dateA = new Date(a.Modified).getTime();
-              var dateB = new Date(b.Modified).getTime();
+
+            allItems=allItems.sort(compareName) /* sorting done based on ID */
+            /*allItems = allItems.sort((a, b) => {
+              var dateA = a.ID;//new Date(a.Created).getTime();
+              var dateB = b.ID;//new Date(b.Created).getTime();
               return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
-            });
+            });*/
             console.log(allItems);
             await setFetchList(true);
+            
+          })
+          .then(async () => 
+          {
+            
           });
       })
       .catch(function (error) {
         console.log(error);
       });
   }, []);
+
+  function compareName(a, b) {
+
+    const name1 = a.ID;
+    const name2 = b.ID;
+
+    let comparison = 0;
+
+    if (name1 < name2) {
+        comparison = 1;
+    } else if (name1 > name2) {
+        comparison = -1;
+    }
+    return comparison;
+}
 
   // TODO Table Construction
   useEffect(() => {
@@ -242,6 +265,7 @@ const App = (props) => {
         return {
           ID: lItem.ID,
           ClientName: lItem.ClientName,
+          siteorclient:lItem.siteorclient,
           OrderNo: lItem.OrderNo,
           AssignedTo: lItem.AssignedTo ? (
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -329,7 +353,7 @@ const App = (props) => {
             lItem.Status ==
               "PO received order entered into production queue" ? (
               <DefaultButton
-                text="Create Quote"
+                text="Request Quote"
                 onClick={() => {
                   console.log(lItem.ID);
                   lItem.ClientName == "Wells Fargo"
@@ -433,7 +457,7 @@ const App = (props) => {
     {
       key: "1",
       name: "Client Name",
-      fieldName: "ClientName",
+      fieldName: "siteorclient",
       minWidth: 100,
       maxWidth: 120,
       isRowHeader: true,
