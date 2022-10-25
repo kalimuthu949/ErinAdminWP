@@ -1,5 +1,5 @@
-import * as React from "react";
-import styles from "./NonWellsFargoQuoteView.module.scss";
+import * as React from 'react'
+import styles from './NonWellsFargoQuoteView.module.scss'
 import {
   loadTheme,
   createTheme,
@@ -16,72 +16,72 @@ import {
   PrimaryButton,
   TextField,
   ThemeProvider,
-} from "@fluentui/react";
-import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
-import { useEffect, useState } from "react";
-import * as $ from "jquery";
-import * as moment from "moment";
+} from '@fluentui/react'
+import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner'
+import { useEffect, useState, useRef } from 'react'
+import * as $ from 'jquery'
+import * as moment from 'moment'
 
-let formID = 0;
-const paramsString = window.location.href.split("?")[1].toLowerCase();
-const searchParams = new URLSearchParams(paramsString);
-searchParams.has("formid") ? (formID = Number(searchParams.get("formid"))) : "";
+let formID = 0
+const paramsString = window.location.href.split('?')[1].toLowerCase()
+const searchParams = new URLSearchParams(paramsString)
+searchParams.has('formid') ? (formID = Number(searchParams.get('formid'))) : ''
 const choiceGroupStyles = {
   flexContainer: {
-    display: "flex",
+    display: 'flex',
     label: {
-      marginRight: "1rem",
+      marginRight: '1rem',
     },
   },
-};
+}
 let arrnwParts = [
   {
     isSelected: false,
-    PartNo: "",
-    PartName: "",
-    PartDescription: "",
+    PartNo: '',
+    PartName: '',
+    PartDescription: '',
     ListPrice: 0,
-    itemFor: "",
+    itemFor: '',
     NetPrice: 0,
-    Note: "",
-    PartDescriptionSort: "",
+    Note: '',
+    PartDescriptionSort: '',
     id: 0,
-    quantity:""
+    quantity: '',
   },
-];
-let arrMilestones = [];
+]
+let arrMilestones = []
 let objValues = {
-  ProjectNo: "",
+  ProjectNo: '',
   Date: new Date(),
-  ConsultantName: "",
-  ConsultantCity: "",
-  ConsultantContactNo: "",
-  ConsultantPinCode: "",
-  ConsultantAddress: "",
-  ClientName: "",
-  ClientCity: "",
-  ClientContactNo: "",
-  ClientPinCode: "",
-  ClientAddress: "",
-  SentVai: "",
-  ProjectDescription: "",
-  TypesOfProposal: "",
-  Multiplier: "",
-  ProposedBy: "",
-  ProposedName: "",
-  ProposedTitle: "",
+  ConsultantName: '',
+  ConsultantCity: '',
+  ConsultantContactNo: '',
+  ConsultantPinCode: '',
+  ConsultantAddress: '',
+  ClientName: '',
+  ClientCity: '',
+  ClientContactNo: '',
+  ClientPinCode: '',
+  ClientAddress: '',
+  SentVai: '',
+  ProjectDescription: '',
+  TypesOfProposal: '',
+  Multiplier: '',
+  ProposedBy: '',
+  ProposedName: '',
+  ProposedTitle: '',
   ProposedDate: new Date(),
-  AcceptedBy: "",
-  AcceptedByName: "",
+  AcceptedBy: '',
+  AcceptedByName: '',
   AcceptedByDate: new Date(),
-  AcceptedByTitle: "",
-  StatementOfWork: "",
-  Services: "",
-  AcceptedForClient: "",
-  CompanyName:"",
-  Title:"",
-  Requestor:""
-};
+  AcceptedByTitle: '',
+  StatementOfWork: '',
+  Services: '',
+  AcceptedForClient: '',
+  CompanyName: '',
+  Title: '',
+  Requestor: '',
+}
 let objSelectedServices = {
   JENEsysEDGE: [],
   ONYXX: [],
@@ -108,60 +108,61 @@ let objSelectedServices = {
   DGLux: [],
   SkyFoundry: [],
   TridiumAnalytics: [],
-};
+}
 const myTheme = createTheme({
   palette: {
-    themePrimary: "#004fa2",
-    themeLighterAlt: "#f1f6fb",
-    themeLighter: "#cadcf0",
-    themeLight: "#9fc0e3",
-    themeTertiary: "#508ac8",
-    themeSecondary: "#155fae",
-    themeDarkAlt: "#004793",
-    themeDark: "#003c7c",
-    themeDarker: "#002c5b",
-    neutralLighterAlt: "#faf9f8",
-    neutralLighter: "#f3f2f1",
-    neutralLight: "#edebe9",
-    neutralQuaternaryAlt: "#e1dfdd",
-    neutralQuaternary: "#d0d0d0",
-    neutralTertiaryAlt: "#c8c6c4",
-    neutralTertiary: "#a19f9d",
-    neutralSecondary: "#605e5c",
-    neutralPrimaryAlt: "#3b3a39",
-    neutralPrimary: "#323130",
-    neutralDark: "#201f1e",
-    black: "#000000",
-    white: "#ffffff",
+    themePrimary: '#004fa2',
+    themeLighterAlt: '#f1f6fb',
+    themeLighter: '#cadcf0',
+    themeLight: '#9fc0e3',
+    themeTertiary: '#508ac8',
+    themeSecondary: '#155fae',
+    themeDarkAlt: '#004793',
+    themeDark: '#003c7c',
+    themeDarker: '#002c5b',
+    neutralLighterAlt: '#faf9f8',
+    neutralLighter: '#f3f2f1',
+    neutralLight: '#edebe9',
+    neutralQuaternaryAlt: '#e1dfdd',
+    neutralQuaternary: '#d0d0d0',
+    neutralTertiaryAlt: '#c8c6c4',
+    neutralTertiary: '#a19f9d',
+    neutralSecondary: '#605e5c',
+    neutralPrimaryAlt: '#3b3a39',
+    neutralPrimary: '#323130',
+    neutralDark: '#201f1e',
+    black: '#000000',
+    white: '#ffffff',
   },
-});
+})
 
-let arrSentViaOptions = [];
-let arrTypesOfProposal = [];
+let arrSentViaOptions = []
+let arrTypesOfProposal = []
 const NWFQuoteView = (props) => {
-  let siteURLForFile = props.context.pageContext.web.absoluteUrl;
-  loadTheme(myTheme);
-  const [Loader, setLoader] = useState(false);
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState(DayOfWeek.Sunday);
-  const [selectedKey, setSelectedKey] = useState(1);
-  const [milestones, setMilestones] = useState(arrMilestones);
-  const [fetchTable, setFetchTable] = useState(true);
-  const [partsDetails, setPartsDetails] = useState(arrnwParts);
-  const [fetchPartsTable, setFetchPartsTable] = useState(true);
-  const [objToPost, setObjToPost] = useState(objValues);
-  const [renderObjValue, setRenderObjValue] = useState(true);
-  const [selectedServices, setSelectedServices] = useState(objSelectedServices);
-  const [fetchSelectedServices, setFetchSelectedServices] = useState(true);
-  const [sentViaOptions, setSentViaOptions] = useState(arrSentViaOptions);
-  const [typesOfProposalOptions, setTypesOfProposalOptions] =
-    useState(arrTypesOfProposal);
+  let siteURLForFile = props.context.pageContext.web.absoluteUrl
+  loadTheme(myTheme)
+  const [Loader, setLoader] = useState(false)
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(DayOfWeek.Sunday)
+  const [selectedKey, setSelectedKey] = useState(1)
+  const [milestones, setMilestones] = useState(arrMilestones)
+  const [fetchTable, setFetchTable] = useState(true)
+  const [partsDetails, setPartsDetails] = useState(arrnwParts)
+  const [fetchPartsTable, setFetchPartsTable] = useState(true)
+  const [objToPost, setObjToPost] = useState(objValues)
+  const [renderObjValue, setRenderObjValue] = useState(true)
+  const [selectedServices, setSelectedServices] = useState(objSelectedServices)
+  const [fetchSelectedServices, setFetchSelectedServices] = useState(true)
+  const [sentViaOptions, setSentViaOptions] = useState(arrSentViaOptions)
+  const [typesOfProposalOptions, setTypesOfProposalOptions] = useState(
+    arrTypesOfProposal,
+  )
 
   const halfWidthInput = {
-    root: { width: 300, margin: "0 1rem 0.5rem 0" },
-  };
+    root: { width: 300, margin: '0 1rem 0.5rem 0' },
+  }
   useEffect(() => {
     props.spcontext.web.lists
-      .getByTitle("GeneralQuoteRequestList")
+      .getByTitle('GeneralQuoteRequestList')
       .fields.filter("EntityPropertyName eq 'SentVia'")
       .get()
       .then((SentVia) => {
@@ -169,12 +170,12 @@ const NWFQuoteView = (props) => {
           arrSentViaOptions.push({
             key: option,
             text: option,
-          });
-        });
-      });
-    setSentViaOptions(arrSentViaOptions);
+          })
+        })
+      })
+    setSentViaOptions(arrSentViaOptions)
     props.spcontext.web.lists
-      .getByTitle("GeneralQuoteRequestList")
+      .getByTitle('GeneralQuoteRequestList')
       .fields.filter("EntityPropertyName eq 'TypesOfProposal'")
       .get()
       .then((types) => {
@@ -182,15 +183,15 @@ const NWFQuoteView = (props) => {
           arrTypesOfProposal.push({
             key: option,
             text: option,
-          });
-        });
-        setTypesOfProposalOptions(arrTypesOfProposal);
-      });
+          })
+        })
+        setTypesOfProposalOptions(arrTypesOfProposal)
+      })
     props.spcontext.web.lists
-      .getByTitle("GeneralQuoteRequestList")
+      .getByTitle('GeneralQuoteRequestList')
       .items.getById(formID)
-      .select("*","Author/Title")
-      .expand("Author")
+      .select('*', 'Author/Title')
+      .expand('Author')
       .get()
       .then((li: any) => {
         objValues = {
@@ -221,69 +222,69 @@ const NWFQuoteView = (props) => {
           StatementOfWork: li.StatementOfWork,
           Services: li.Services,
           AcceptedForClient: li.AcceptedForClient,
-          CompanyName:li.CompanyName,
-          Title:li.Title,
-          Requestor:li.Author.Title
-        };
-        console.log(li);
+          CompanyName: li.CompanyName,
+          Title: li.Title,
+          Requestor: li.Author.Title,
+        }
+        console.log(li)
         arrnwParts =
-          li.ProposedServicesFees == ""
+          li.ProposedServicesFees == ''
             ? []
-            : JSON.parse(li.ProposedServicesFees);
-        console.log(JSON.parse(li.ProposedServicesFees));
+            : JSON.parse(li.ProposedServicesFees)
+        console.log(JSON.parse(li.ProposedServicesFees))
 
         arrMilestones =
-          li.Milestones && li.Milestones != "" ? JSON.parse(li.Milestones) : [];
-        console.log(arrMilestones);
-        setRenderObjValue(true);
-        setFetchPartsTable(true);
-        setFetchTable(true);
+          li.Milestones && li.Milestones != '' ? JSON.parse(li.Milestones) : []
+        console.log(arrMilestones)
+        setRenderObjValue(true)
+        setFetchPartsTable(true)
+        setFetchTable(true)
       })
-      .catch((error) => console.log(error));
-  }, []);
+      .catch((error) => console.log(error))
+  }, [])
   useEffect(() => {
     if (fetchTable) {
-      setMilestones([...arrMilestones]);
-      setFetchTable(false);
+      setMilestones([...arrMilestones])
+      setFetchTable(false)
     }
-  }, [fetchTable]);
+  }, [fetchTable])
   useEffect(() => {
     if (fetchPartsTable) {
       arrnwParts && arrnwParts.length > 0
         ? setPartsDetails([...arrnwParts])
-        : "";
-      setFetchPartsTable(false);
+        : ''
+      setFetchPartsTable(false)
     }
-  }, [fetchPartsTable]);
+  }, [fetchPartsTable])
   useEffect(() => {
     if (fetchSelectedServices) {
-      setSelectedServices(objSelectedServices);
-      setFetchSelectedServices(false);
+      setSelectedServices(objSelectedServices)
+      setFetchSelectedServices(false)
     }
-  }, [fetchSelectedServices]);
+  }, [fetchSelectedServices])
   useEffect(() => {
     if (renderObjValue) {
-      setObjToPost(objValues);
-      setRenderObjValue(false);
+      setObjToPost(objValues)
+      setRenderObjValue(false)
     }
-  }, [renderObjValue]);
+  }, [renderObjValue])
   return (
-    <div style={{ backgroundColor: "#F2F2F2", padding: "1rem 2rem" }}>
+    <div style={{ backgroundColor: '#F2F2F2', padding: '1rem 2rem' }}>
       {Loader && (
-          <Spinner
-            label="Loading items..."
-            size={SpinnerSize.large}
-            style={{
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              top: 0,
-              left: 0,
-              backgroundColor: "#fff",
-              zIndex: 10000,
-            }}
-          />
-        )}
+        <Spinner
+          label="Loading items..."
+          size={SpinnerSize.large}
+          style={{
+            width: '100vw',
+            height: '100vh',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            backgroundColor: '#fff',
+            zIndex: 10000,
+          }}
+        />
+      )}
       <div className={styles.formHeader}>
         <Icon
           iconName="NavigateBack"
@@ -292,19 +293,19 @@ const NWFQuoteView = (props) => {
               fontSize: 30,
               fontWeight: 600,
               color: myTheme.palette.themePrimary,
-              marginRight: "1rem",
-              cursor: "pointer",
+              marginRight: '1rem',
+              cursor: 'pointer',
             },
           }}
           onClick={() => {
-            history.back();
+            history.back()
           }}
         />
         <h2
           style={{
-            textAlign: "center",
+            textAlign: 'center',
             color: myTheme.palette.themePrimary,
-            width: "100%",
+            width: '100%',
           }}
         >
           Proposal of Services
@@ -312,24 +313,33 @@ const NWFQuoteView = (props) => {
       </div>
       <div
         style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginBottom: '1rem',
         }}
         className={styles.section}
       >
-        <PrimaryButton text="Export docx" style={{ marginRight: "1rem" }} onClick={() =>
+        <PrimaryButton
+          text="Export docx"
+          style={{ marginRight: '1rem' }}
+          onClick={() =>
             downloadFile(
-              "https://nonwellsfargo.azurewebsites.net/api/docx",
-              "demo.docx",
-              "docx"
-            )}/>
-        <PrimaryButton text="Export Excel" onClick={() =>
-          downloadFile(
-            "https://nonwellsfargo.azurewebsites.net/api/excel",
-            "demo.xlsx",
-            "excel"
-          )}/>
+              'https://nonwellsfargo.azurewebsites.net/api/docx',
+              'demo.docx',
+              'docx',
+            )
+          }
+        />
+        <PrimaryButton
+          text="Export Excel"
+          onClick={() =>
+            downloadFile(
+              'https://nonwellsfargo.azurewebsites.net/api/excel',
+              'demo.xlsx',
+              'excel',
+            )
+          }
+        />
       </div>
       <div className={`${styles.projectDetails} ${styles.section}`}>
         <TextField
@@ -343,11 +353,11 @@ const NWFQuoteView = (props) => {
             return (
               date.getMonth() +
               1 +
-              "/" +
+              '/' +
               date.getDate() +
-              "/" +
+              '/' +
               date.getFullYear()
-            );
+            )
           }}
           styles={halfWidthInput}
           label="Date"
@@ -459,7 +469,7 @@ const NWFQuoteView = (props) => {
             selectedKey={objToPost.SentVai}
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <TextField
             styles={halfWidthInput}
             label="Services"
@@ -492,9 +502,9 @@ const NWFQuoteView = (props) => {
         {/*  Pivot Section Start */}
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
           <h3 style={{ color: myTheme.palette.themePrimary }}>
@@ -535,12 +545,12 @@ const NWFQuoteView = (props) => {
                         <tr
                           style={{
                             backgroundColor: part.isSelected
-                              ? "#eef4fa"
-                              : "#ffffff",
+                              ? '#eef4fa'
+                              : '#ffffff',
                           }}
                         >
                           <td>
-                            {" "}
+                            {' '}
                             <Checkbox
                               checked={part.isSelected ? true : false}
                             />
@@ -554,19 +564,19 @@ const NWFQuoteView = (props) => {
                               {part.PartDescriptionSort}
                             </label>
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td style={{ textAlign: 'center' }}>
                             {part.ListPrice}
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td style={{ textAlign: 'center' }}>
                             {part.quantity}
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td style={{ textAlign: 'center' }}>
                             {part.NetPrice}
                           </td>
 
                           <td>{part.Note}</td>
                         </tr>
-                      );
+                      )
                     }
                   })
                 ) : (
@@ -574,9 +584,9 @@ const NWFQuoteView = (props) => {
                     <td
                       colSpan={6}
                       style={{
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        padding: "1rem",
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        padding: '1rem',
                       }}
                     >
                       No Data Found
@@ -586,7 +596,7 @@ const NWFQuoteView = (props) => {
               </tbody>
             </table>
           ) : (
-            ""
+            ''
           )}
         </ThemeProvider>
         {/* Pivot */}
@@ -594,7 +604,7 @@ const NWFQuoteView = (props) => {
       </div>
       {/* Section */}
       <div className={styles.section}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>
             <h3 style={{ color: myTheme.palette.themePrimary }}>
               Proposed for Consultant: Lynxspring, Inc
@@ -622,11 +632,11 @@ const NWFQuoteView = (props) => {
                 return (
                   date.getMonth() +
                   1 +
-                  "/" +
+                  '/' +
                   date.getDate() +
-                  "/" +
+                  '/' +
                   date.getFullYear()
-                );
+                )
               }}
               value={objValues.ProposedDate}
               styles={halfWidthInput}
@@ -636,7 +646,7 @@ const NWFQuoteView = (props) => {
           </div>
           <div>
             <div>
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <h3 style={{ color: myTheme.palette.themePrimary }}>
                   Accepted for Client:
                 </h3>
@@ -670,11 +680,11 @@ const NWFQuoteView = (props) => {
                   return (
                     date.getMonth() +
                     1 +
-                    "/" +
+                    '/' +
                     date.getDate() +
-                    "/" +
+                    '/' +
                     date.getFullYear()
-                  );
+                  )
                 }}
                 value={objValues.AcceptedByDate}
                 styles={halfWidthInput}
@@ -689,14 +699,14 @@ const NWFQuoteView = (props) => {
       <div className={styles.section}>
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            width: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
           }}
         >
           <h3
-            style={{ textAlign: "center", color: myTheme.palette.themePrimary }}
+            style={{ textAlign: 'center', color: myTheme.palette.themePrimary }}
           >
             LYNXSPRING Schedules of Invoice and Statement of work
           </h3>
@@ -736,9 +746,9 @@ const NWFQuoteView = (props) => {
                       <td>
                         <div
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                           }}
                         >
                           <DatePicker
@@ -746,11 +756,11 @@ const NWFQuoteView = (props) => {
                               return (
                                 date.getMonth() +
                                 1 +
-                                "/" +
+                                '/' +
                                 date.getDate() +
-                                "/" +
+                                '/' +
                                 date.getFullYear()
-                              );
+                              )
                             }}
                             key={milestone.id}
                             id={`${milestone.id}`}
@@ -767,11 +777,11 @@ const NWFQuoteView = (props) => {
                               return (
                                 date.getMonth() +
                                 1 +
-                                "/" +
+                                '/' +
                                 date.getDate() +
-                                "/" +
+                                '/' +
                                 date.getFullYear()
-                              );
+                              )
                             }}
                             styles={{ root: { width: 150 } }}
                             firstDayOfWeek={firstDayOfWeek}
@@ -793,7 +803,7 @@ const NWFQuoteView = (props) => {
                         />
                       </td>
                     </tr>
-                  );
+                  )
                 })}
             </tbody>
           </table>
@@ -806,222 +816,213 @@ const NWFQuoteView = (props) => {
 
       {/* Section */}
     </div>
-  );
+  )
 
-function getExcelJsondata()
-{
-  var excelJsonData= {
-    "quoteTo": objValues.CompanyName,
-    "name": objValues.Requestor,
-    "project": objValues.Title,
-    "date": moment(objValues.Date).format("DD/MM/YYYY"),
-    "expires": "30 days from the date generated",
-    "paymentTerms": "",
-    "preparedBy": "",
-    "multiplier": objValues.Multiplier,
-    "total": "$ ",
+  function getExcelJsondata() {
+    var excelJsonData = {
+      quoteTo: objValues.CompanyName,
+      name: objValues.Requestor,
+      project: objValues.Title,
+      date: moment(objValues.Date).format('DD/MM/YYYY'),
+      expires: '30 days from the date generated',
+      paymentTerms: '',
+      preparedBy: '',
+      multiplier: objValues.Multiplier,
+      total: '$ ',
 
-    "installColumns": [{
-        "coloumn1": "1",
-        "coloumn2": "1",
-        "coloumn3": "Lynxspring",
-        "coloumn4": "JENE-EG414-VAV",
-        "coloumn5": "JENEsys EDGE 414 Programmable VAV",
-        "coloumn6": "$ 328.75",
-        "coloumn7": "$ 328.75",
-        "coloumn8": "$ 328.75"
+      installColumns: [
+        {
+          coloumn1: '1',
+          coloumn2: '1',
+          coloumn3: 'Lynxspring',
+          coloumn4: 'JENE-EG414-VAV',
+          coloumn5: 'JENEsys EDGE 414 Programmable VAV',
+          coloumn6: '$ 328.75',
+          coloumn7: '$ 328.75',
+          coloumn8: '$ 328.75',
+        },
+        {
+          coloumn1: '2',
+          coloumn2: '1',
+          coloumn3: 'Lynxspring',
+          coloumn4: 'xxxxx',
+          coloumn5: 'xxxxx',
+          coloumn6: '$  0.00',
+          coloumn7: '$  0.00',
+          coloumn8: '$  0.00',
+        },
+        {
+          coloumn1: '3',
+          coloumn2: '1',
+          coloumn3: 'Lynxspring',
+          coloumn4: 'xxxxx',
+          coloumn5: 'xxxxx',
+          coloumn6: '$  0.00',
+          coloumn7: '$  0.00',
+          coloumn8: '$  0.00',
+        },
+        {
+          coloumn1: '4',
+          coloumn2: '1',
+          coloumn3: 'Lynxspring',
+          coloumn4: 'xxxxx',
+          coloumn5: 'xxxxx',
+          coloumn6: '$  0.00',
+          coloumn7: '$  0.00',
+          coloumn8: '$  0.00',
+        },
+      ],
 
-    }, {
-        "coloumn1": "2",
-        "coloumn2": "1",
-        "coloumn3": "Lynxspring",
-        "coloumn4": "xxxxx",
-        "coloumn5": "xxxxx",
-        "coloumn6": "$  0.00",
-        "coloumn7": "$  0.00",
-        "coloumn8": "$  0.00"
+      projectName: objValues.Title,
+      clientName: objValues.ClientName,
+      address: objValues.ClientAddress,
+      cityState: objValues.ClientPinCode,
+      address2: objValues.ClientCity,
+      email: objValues.SentVai,
+      services: objValues.Services,
+      hourlySum: objValues.TypesOfProposal,
+      projectDescription: objValues.ProjectDescription,
+      proposedBy: objValues.ProposedBy,
+      proposedName: objValues.ProposedName,
+      proposedTitle: objValues.ProposedTitle,
+      proposedDate: moment(objValues.ProposedDate).format('DD/MM/YYYY'),
+      acceptedBy: objValues.AcceptedBy,
+      acceptedName: objValues.AcceptedByName,
+      acceptedTitle: objValues.AcceptedByTitle,
+      acceptedDateSigned: moment(objValues.AcceptedByDate).format('DD/MM/YYYY'),
+      amount1: '$XXXXXX',
+      amount2: '$XXXXXX',
+      amount3: '$XXXXXX',
+      amount4: '$XXXXXX',
+      totallast: '$XXXXXX',
+    }
 
-    }, {
-        "coloumn1": "3",
-        "coloumn2": "1",
-        "coloumn3": "Lynxspring",
-        "coloumn4": "xxxxx",
-        "coloumn5": "xxxxx",
-        "coloumn6": "$  0.00",
-        "coloumn7": "$  0.00",
-        "coloumn8": "$  0.00"
-
-    }, {
-        "coloumn1": "4",
-        "coloumn2": "1",
-        "coloumn3": "Lynxspring",
-        "coloumn4": "xxxxx",
-        "coloumn5": "xxxxx",
-        "coloumn6": "$  0.00",
-        "coloumn7": "$  0.00",
-        "coloumn8": "$  0.00"
-    }],
-
-
-    "projectName": objValues.Title,
-    "clientName": objValues.ClientName,
-    "address": objValues.ClientAddress,
-    "cityState": objValues.ClientPinCode,
-    "address2": objValues.ClientCity,
-    "email": objValues.SentVai,
-    "services": objValues.Services,
-    "hourlySum": objValues.TypesOfProposal,
-    "projectDescription": objValues.ProjectDescription,
-    "proposedBy": objValues.ProposedBy,
-    "proposedName": objValues.ProposedName,
-    "proposedTitle": objValues.ProposedTitle,
-    "proposedDate": moment(objValues.ProposedDate).format("DD/MM/YYYY"),
-    "acceptedBy": objValues.AcceptedBy,
-    "acceptedName": objValues.AcceptedByName,
-    "acceptedTitle": objValues.AcceptedByTitle,
-    "acceptedDateSigned": moment(objValues.AcceptedByDate).format("DD/MM/YYYY"),
-    "amount1": "$XXXXXX",
-    "amount2": "$XXXXXX",
-    "amount3": "$XXXXXX",
-    "amount4": "$XXXXXX",
-    "totallast": "$XXXXXX"
-}
-
-    var installationTable = [];
+    var installationTable = []
     $.each(partsDetails, function (key, val) {
       installationTable.push({
-        "coloumn1": key,
-        "coloumn2": "1",
-        "coloumn3": "Lynxspring",
-        "coloumn4": val.PartDescriptionSort,
-        "coloumn5": val.PartDescription,
-        "coloumn6": val.ListPrice,
-        "coloumn7": val.NetPrice,
-        "coloumn8": val.NetPrice
-      });
-    });
-
-    var sumofnetprice=0;
-    $.each(installationTable, function (key, val) 
-    {
-      sumofnetprice=sumofnetprice+val.coloumn8
-    });
-
-excelJsonData.installColumns=installationTable;
-excelJsonData.total="$ "+sumofnetprice.toString();
-var milestoneamounts=[];
-
-var totalmilestoneamount="$ XXXXXX";
-$.each(milestones, function (key, val) {
-  milestoneamounts.push(val.amount);
-});
-
-if(milestoneamounts.length==4)
-{
-  excelJsonData.amount1="$"+milestoneamounts[0];
-  excelJsonData.amount2="$"+milestoneamounts[1];
-  excelJsonData.amount3="$"+milestoneamounts[2];
-  excelJsonData.amount4="$"+milestoneamounts[3];
-}
-
-if(milestoneamounts.length==3)
-{
-  excelJsonData.amount1="$"+milestoneamounts[0];
-  excelJsonData.amount2="$"+milestoneamounts[1];
-  excelJsonData.amount3="$"+milestoneamounts[2];
-}
-
-if(milestoneamounts.length==2)
-{
-  excelJsonData.amount1="$"+milestoneamounts[0];
-  excelJsonData.amount2="$"+milestoneamounts[1];
-}
-
-if(milestoneamounts.length==1)
-{
-  excelJsonData.amount1="$"+milestoneamounts[0];
-}
-
-var sumofmilestone=0;
-
-$.each(milestoneamounts,function(key,val)
-{
-  sumofmilestone=Number(sumofmilestone)+Number(val);
-})
-
-excelJsonData.totallast="$ "+sumofmilestone.toString();
-
-return excelJsonData;
-}
-
-
-async function downloadFile(URL, fileName, filetype) {
-  setLoader(true);
-  var jsonData = getExcelJsondata();
-  console.log(jsonData);
-  $.ajax({
-    type: "POST",
-    cache: false,
-    url: URL,
-    data: jsonData,
-    xhrFields: {
-      responseType: "arraybuffer",
-    },
-  })
-    .done(async function (data, status, xmlHeaderRequest) {
-      var blob = new Blob([data], {
-        type: xmlHeaderRequest.getResponseHeader("Content-Type"),
-      });
-
-      let file = blob;
-      await props.spcontext.web
-        .getFolderByServerRelativePath("Shared Documents")
-        .files.addUsingPath(fileName, file, { Overwrite: true })
-        .then(function (data) {
-          //alert("success");
-          console.log(data);
-          setLoader(false);
-          var link = document.createElement("a");
-
-          if (filetype == "excel")
-            link.setAttribute(
-              "href",
-              data.data.ServerRelativeUrl + "?download=1"
-            );
-          else
-            link.setAttribute(
-              "href",
-              siteURLForFile +
-                "/_layouts/download.aspx?SourceUrl=" +
-                siteURLForFile +
-                "/Shared%20Documents/" +
-                data.data.Name
-            );
-
-          link.setAttribute("target", "_blank");
-          link.setAttribute("download", fileName);
-          //link.style = "visibility:hidden";
-          document.body.appendChild(link);
-          link.click();
-          setTimeout(function () {
-            document.body.removeChild(link);
-          }, 500);
-        })
-        .catch(function () {
-          setLoader(false);
-          alert("Error while downloading File.Please contact admin");
-        });
+        coloumn1: key,
+        coloumn2: '1',
+        coloumn3: 'Lynxspring',
+        coloumn4: val.PartDescriptionSort,
+        coloumn5: val.PartDescription,
+        coloumn6: val.ListPrice,
+        coloumn7: val.NetPrice,
+        coloumn8: val.NetPrice,
+      })
     })
-    .catch(function (jqXHR, textStatus, errorThrown) {
-      setLoader(false);
-      alert("Error while downloading File.Please contact admin");
-      console.log("Response from File API Failed");
-      console.log(JSON.stringify(jqXHR));
-      console.log(JSON.stringify(textStatus));
-      console.log(JSON.stringify(errorThrown));
-    });
+
+    var sumofnetprice = 0
+    $.each(installationTable, function (key, val) {
+      sumofnetprice = sumofnetprice + val.coloumn8
+    })
+
+    excelJsonData.installColumns = installationTable
+    excelJsonData.total = '$ ' + sumofnetprice.toString()
+    var milestoneamounts = []
+
+    var totalmilestoneamount = '$ XXXXXX'
+    $.each(milestones, function (key, val) {
+      milestoneamounts.push(val.amount)
+    })
+
+    if (milestoneamounts.length == 4) {
+      excelJsonData.amount1 = '$' + milestoneamounts[0]
+      excelJsonData.amount2 = '$' + milestoneamounts[1]
+      excelJsonData.amount3 = '$' + milestoneamounts[2]
+      excelJsonData.amount4 = '$' + milestoneamounts[3]
+    }
+
+    if (milestoneamounts.length == 3) {
+      excelJsonData.amount1 = '$' + milestoneamounts[0]
+      excelJsonData.amount2 = '$' + milestoneamounts[1]
+      excelJsonData.amount3 = '$' + milestoneamounts[2]
+    }
+
+    if (milestoneamounts.length == 2) {
+      excelJsonData.amount1 = '$' + milestoneamounts[0]
+      excelJsonData.amount2 = '$' + milestoneamounts[1]
+    }
+
+    if (milestoneamounts.length == 1) {
+      excelJsonData.amount1 = '$' + milestoneamounts[0]
+    }
+
+    var sumofmilestone = 0
+
+    $.each(milestoneamounts, function (key, val) {
+      sumofmilestone = Number(sumofmilestone) + Number(val)
+    })
+
+    excelJsonData.totallast = '$ ' + sumofmilestone.toString()
+
+    return excelJsonData
+  }
+
+  async function downloadFile(URL, fileName, filetype) {
+    setLoader(true)
+    var jsonData = getExcelJsondata()
+    console.log(jsonData)
+    $.ajax({
+      type: 'POST',
+      cache: false,
+      url: URL,
+      data: jsonData,
+      xhrFields: {
+        responseType: 'arraybuffer',
+      },
+    })
+      .done(async function (data, status, xmlHeaderRequest) {
+        var blob = new Blob([data], {
+          type: xmlHeaderRequest.getResponseHeader('Content-Type'),
+        })
+
+        let file = blob
+        await props.spcontext.web
+          .getFolderByServerRelativePath('Shared Documents')
+          .files.addUsingPath(fileName, file, { Overwrite: true })
+          .then(function (data) {
+            //alert("success");
+            console.log(data)
+            setLoader(false)
+            var link = document.createElement('a')
+
+            if (filetype == 'excel')
+              link.setAttribute(
+                'href',
+                data.data.ServerRelativeUrl + '?download=1',
+              )
+            else
+              link.setAttribute(
+                'href',
+                siteURLForFile +
+                  '/_layouts/download.aspx?SourceUrl=' +
+                  siteURLForFile +
+                  '/Shared%20Documents/' +
+                  data.data.Name,
+              )
+
+            link.setAttribute('target', '_blank')
+            link.setAttribute('download', fileName)
+            //link.style = "visibility:hidden";
+            document.body.appendChild(link)
+            link.click()
+            setTimeout(function () {
+              document.body.removeChild(link)
+            }, 500)
+          })
+          .catch(function () {
+            setLoader(false)
+            alert('Error while downloading File.Please contact admin')
+          })
+      })
+      .catch(function (jqXHR, textStatus, errorThrown) {
+        setLoader(false)
+        alert('Error while downloading File.Please contact admin')
+        console.log('Response from File API Failed')
+        console.log(JSON.stringify(jqXHR))
+        console.log(JSON.stringify(textStatus))
+        console.log(JSON.stringify(errorThrown))
+      })
+  }
 }
-
-
-};
-export default NWFQuoteView;
+export default NWFQuoteView
