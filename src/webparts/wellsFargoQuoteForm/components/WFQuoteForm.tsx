@@ -970,7 +970,7 @@ const WFQuoteForm = (props) => {
                     />
                   </td>
                   <td>
-                    <p>$</p>
+                  {/* <span>$</span> */}
                     <TextField
                       key={i}
                       id={`${installItem.id}`}
@@ -1052,11 +1052,12 @@ const WFQuoteForm = (props) => {
                     />
                   </td>
                   <td>
-                    <p>$</p>
+                    {/* <span>$</span> */}
                     <TextField
                       key={i}
                       type="number"
                       id={`${installItem.id}`}
+                      style={{ display: 'inline' }}
                       value={installItem.hourlyBillingRate}
                       onChange={(e) => {
                         arrInstall.filter(
@@ -1189,7 +1190,7 @@ const WFQuoteForm = (props) => {
               <td></td>
               <td colSpan={7}>
                 <div style={{ width: '3rem', marginLeft: 'auto' }}>
-                 {/* <label htmlFor=""></label> */}
+                  {/* <label htmlFor=""></label> */}
                   <TextField
                     value={projectInfo.InstallTotalProduct}
                     onChange={(e) => {
