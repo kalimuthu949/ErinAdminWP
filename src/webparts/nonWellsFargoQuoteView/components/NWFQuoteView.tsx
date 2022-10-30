@@ -294,7 +294,7 @@ const NWFQuoteView = (props) => {
               fontWeight: 600,
               color: myTheme.palette.themePrimary,
               marginRight: '1rem',
-              cursor: 'pointer',
+              cursor: 'Pointer',
             },
           }}
           onClick={() => {

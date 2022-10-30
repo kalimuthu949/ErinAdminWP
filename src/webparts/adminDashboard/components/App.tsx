@@ -27,6 +27,10 @@ import {
   TextField,
   ThemeProvider,
   PartialTheme,
+  Stack,
+  Spinner,
+  IStackProps,
+  SpinnerSize,
 } from '@fluentui/react'
 import Pagination from 'office-ui-fabric-react-pagination'
 import {
@@ -124,7 +128,15 @@ const modelProps = {
   topOffsetFixed: true,
   styles: { main: { maxWidth: 450 } },
 }
-
+const tokens = {
+  sectionStack: {
+    childrenGap: 10,
+  },
+  spinnerStack: {
+    childrenGap: 20,
+  },
+}
+const rowProps: IStackProps = { horizontal: true, verticalAlign: 'center' }
 const App = (props) => {
   loadTheme(blueTheme)
   let siteURL = props.context.pageContext.web.absoluteUrl
@@ -655,7 +667,17 @@ const App = (props) => {
           />
         </>
       ) : (
-        <div className={styles.noDataFound}>No data found</div>
+        // <div className={styles.noDataFound}>No data found</div>
+        <Stack {...rowProps} tokens={tokens.spinnerStack}>
+          {/* <Label>Large spinner</Label> */}
+          <Spinner
+            size={SpinnerSize.large}
+            style={{
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          />
+        </Stack>
       )}
       <ThemeProvider theme={isWFItem ? redTheme : blueTheme}>
         <Dialog
