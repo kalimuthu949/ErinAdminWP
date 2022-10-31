@@ -193,6 +193,7 @@ const App = (props) => {
             wfItems.forEach((wfItem) => {
               allItems.push({
                 ID: wfItem.ID,
+                Created:wfItem.Created,
                 ClientName: 'Wells Fargo',
                 siteorclient: wfItem.BEName,
                 OrderNo: wfItem.OrderNo,
@@ -221,6 +222,7 @@ const App = (props) => {
                 nwfItems.forEach((nwfItem) => {
                   allItems.push({
                     ID: nwfItem.ID,
+                    Created:nwfItem.Created,
                     ClientName: nwfItem.CompanyName,
                     siteorclient: nwfItem.CompanyName,
                     OrderNo: nwfItem.OrderNo,
@@ -236,12 +238,15 @@ const App = (props) => {
                 })
               })
 
-            allItems = allItems.sort(compareName) /* sorting done based on ID */
-            /*allItems = allItems.sort((a, b) => {
-              var dateA = a.ID;//new Date(a.Created).getTime();
-              var dateB = b.ID;//new Date(b.Created).getTime();
-              return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
-            });*/
+            //allItems = allItems.sort(compareName) /* sorting done based on ID */
+            // allItems = allItems.sort((a, b) => {
+            //   var dateA = new Date(a.Created).getTime();
+            //   var dateB = new Date(b.Created).getTime();
+            //   return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
+            // });
+            allItems=allItems.sort(function(a, b) {
+              return (a.Created > b.Created) ? -1 : ((a.Created < b.Created) ? 1 : 0);
+            });
             console.log(allItems)
             await setFetchList(true)
           })
