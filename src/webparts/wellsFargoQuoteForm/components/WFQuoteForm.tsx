@@ -970,7 +970,6 @@ const WFQuoteForm = (props) => {
                     />
                   </td>
                   <td>
-                  {/* <span>$</span> */}
                     <TextField
                       key={i}
                       id={`${installItem.id}`}
@@ -1699,17 +1698,14 @@ const WFQuoteForm = (props) => {
         </table>
       </div>
       <div className={styles.SubmitSection}>
-        <PrimaryButton
-          text="Submit"
-          onClick={SubmitHandler}
-          styles={{ root: { marginRight: '1rem' } }}
-        />
         <DefaultButton
           text="Cancel"
+          styles={{ root: { marginRight: '1rem' } }}
           onClick={() => {
             history.back()
           }}
         />
+        <PrimaryButton text="Submit" onClick={SubmitHandler} />
       </div>
     </ThemeProvider>
   )

@@ -4302,12 +4302,12 @@ const NWFQuoteForm = (props) => {
         </div>
         {/* Milestone Section */}
         <div className={styles.submitSection}>
-          <PrimaryButton
-            text="Submit"
+          <DefaultButton
+            text="Cancel"
             style={{ marginRight: '0.5rem' }}
-            onClick={submitBtnHandler}
+            onClick={() => history.back()}
           />
-          <DefaultButton text="Cancel" onClick={() => history.back()} />
+          <PrimaryButton text="Submit" onClick={submitBtnHandler} />
         </div>
       </div>
 

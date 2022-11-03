@@ -193,7 +193,7 @@ const App = (props) => {
             wfItems.forEach((wfItem) => {
               allItems.push({
                 ID: wfItem.ID,
-                Created:wfItem.Created,
+                Created: wfItem.Created,
                 ClientName: 'Wells Fargo',
                 siteorclient: wfItem.BEName,
                 OrderNo: wfItem.OrderNo,
@@ -222,7 +222,7 @@ const App = (props) => {
                 nwfItems.forEach((nwfItem) => {
                   allItems.push({
                     ID: nwfItem.ID,
-                    Created:nwfItem.Created,
+                    Created: nwfItem.Created,
                     ClientName: nwfItem.CompanyName,
                     siteorclient: nwfItem.CompanyName,
                     OrderNo: nwfItem.OrderNo,
@@ -244,9 +244,9 @@ const App = (props) => {
             //   var dateB = new Date(b.Created).getTime();
             //   return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
             // });
-            allItems=allItems.sort(function(a, b) {
-              return (a.Created > b.Created) ? -1 : ((a.Created < b.Created) ? 1 : 0);
-            });
+            allItems = allItems.sort(function (a, b) {
+              return a.Created > b.Created ? -1 : a.Created < b.Created ? 1 : 0
+            })
             console.log(allItems)
             await setFetchList(true)
           })
@@ -292,7 +292,7 @@ const App = (props) => {
               />
             </div>
           ) : (
-            <div style={{ width: '100%', textAlign: 'center' }}>N/A</div>
+            <div style={{ width: '100%', textAlign: 'start' }}>N/A</div>
           ),
           StartDate: lItem.StartDate
             ? new Date(lItem.StartDate).toLocaleDateString()
@@ -308,7 +308,7 @@ const App = (props) => {
                 placeholder="Select an option"
                 id={`${lItem.ID}`}
                 options={statusOptions}
-                styles={{ root: { width: 330 } }}
+                styles={{ root: { width: 350 } }}
                 onChange={(e, selected) => {
                   props.spcontext.web.lists
                     .getByTitle(
@@ -376,7 +376,7 @@ const App = (props) => {
                 allowDisabledFocus
               />
             ) : (
-              <div style={{ width: '100%', textAlign: 'center' }}>
+              <div style={{ width: '100%' }}>
                 <Icon
                   iconName="PageData"
                   onClick={() => {
@@ -617,12 +617,12 @@ const App = (props) => {
         <ChoiceGroup
           defaultSelectedKey="All"
           styles={{
-            root:{
-              selectors:{
-                ".ms-ChoiceField-wrapper::after":{
-                  border:"0 !important",
-                  }
-              }
+            root: {
+              selectors: {
+                '.ms-ChoiceField-wrapper::after': {
+                  border: '0 !important',
+                },
+              },
             },
             flexContainer: {
               display: 'flex',
@@ -630,7 +630,6 @@ const App = (props) => {
                 marginRight: '1rem',
               },
             },
-            
           }}
           options={options}
           onChange={_onChange}
