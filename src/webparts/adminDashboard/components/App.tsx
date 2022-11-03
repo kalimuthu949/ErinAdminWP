@@ -617,12 +617,20 @@ const App = (props) => {
         <ChoiceGroup
           defaultSelectedKey="All"
           styles={{
+            root:{
+              selectors:{
+                ".ms-ChoiceField-wrapper::after":{
+                  border:"0 !important",
+                  }
+              }
+            },
             flexContainer: {
               display: 'flex',
               label: {
                 marginRight: '1rem',
               },
             },
+            
           }}
           options={options}
           onChange={_onChange}
